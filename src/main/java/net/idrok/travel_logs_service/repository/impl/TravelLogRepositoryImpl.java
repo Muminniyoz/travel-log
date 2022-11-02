@@ -10,6 +10,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
@@ -26,10 +27,12 @@ public class TravelLogRepositoryImpl implements TravelLogRepository {
     private final JdbcTemplate jdbc;
     private final RowMapper<TravelLog> fullMapper;
     private final SimpleJdbcInsert simpleJdbcInsert;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     public TravelLogRepositoryImpl(JdbcTemplate jdbc){
         this.jdbc = jdbc;
         simpleJdbcInsert = new SimpleJdbcInsert(jdbc).withTableName("travel_log").usingGeneratedKeyColumns("id");
+        this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbc);
         fullMapper = (rs, rowNum) -> new TravelLog(
                 rs.getLong("id"),
                 rs.getDate("travel_date").toLocalDate(),
@@ -115,13 +118,25 @@ public class TravelLogRepositoryImpl implements TravelLogRepository {
 
     @Override
     public List<TravelsOnDay> generateReport(LocalDate startDate, LocalDate endDate, String vehicleRegNum, String vehicleOwner) {
-             final String sql =
-                "SELECT *  FROM travel_log WHERE "
-                        + ((startDate != null) ? " travel_date::date >= '" + startDate + "'::date AND " : "")
-                        + ((endDate != null) ? " travel_date::date <= '" + endDate + "'::date AND " : "")
-                + " vehicle_reg_num ILIKE ? and vehicle_owner ILIKE ? ORDER BY travel_date, starting_odometer;";
+        final StringBuilder sql = new StringBuilder("SELECT *  FROM travel_log WHERE ");
+
+        MapSqlParameterSource source = new MapSqlParameterSource()
+                .addValue("vehicle_reg_num", "%" + vehicleRegNum + "%")
+                .addValue("vehicle_owner", "%" + vehicleOwner + "%");
+
+        if(startDate != null){
+            source.addValue("start_date", startDate);
+            sql.append(" travel_date::date >= :start_date::date AND ");
+        }
+        if(endDate != null) {
+            source.addValue("end_date", endDate);
+            sql.append("travel_date::date <= :end_date::date AND ");
+        }
+        sql.append(" vehicle_reg_num ILIKE :vehicle_reg_num and vehicle_owner ILIKE :vehicle_owner ORDER BY travel_date, starting_odometer;");
+
+
         System.out.println(sql);
-        return jdbc.query(sql, fullMapper, "%" + vehicleRegNum + "%", "%" + vehicleOwner + "%")
+        return namedParameterJdbcTemplate.query(sql.toString(), source, fullMapper)
                 .stream()
                 .collect(Collectors.groupingBy(TravelLog::getTravelDate, Collectors.toList()))
                 .entrySet()

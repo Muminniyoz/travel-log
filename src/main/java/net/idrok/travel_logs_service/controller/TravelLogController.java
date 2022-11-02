@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/travel_log")
+@RequestMapping("/api/travel_log")
 public class TravelLogController {
     private final TravelLogService service;
 

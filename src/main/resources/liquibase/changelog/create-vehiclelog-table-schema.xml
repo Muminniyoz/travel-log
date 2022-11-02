@@ -41,7 +41,7 @@
                 startWith="100"
                 tableName="travel_log"/>
 
-        <loadData commentLineStartsWith="#" encoding="UTF-8" file="data/travel_log.csv"   schemaName="public"  separator=";" tableName="travel_log">
+        <loadData commentLineStartsWith="#" encoding="UTF-8" file="liquibase/data/travel_log.csv"   schemaName="public"  separator=";" tableName="travel_log">
         <column header="id" name="id" type="NUMERIC"/>
         <column header="travel_date" name="travel_date" type="date"/>
         <column header="vehicle_reg_num" name="vehicle_reg_num" type="STRING"/>

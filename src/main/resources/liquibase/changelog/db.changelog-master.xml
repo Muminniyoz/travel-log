@@ -8,6 +8,6 @@
       http://www.liquibase.org/xml/ns/pro
       http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.1.xsd">
 
-    <include file="db/changelog/create-vehiclelog-table-schema.xml"/>
+    <include file="liquibase/changelog/create-vehiclelog-table-schema.xml"/>
 
 </databaseChangeLog>
