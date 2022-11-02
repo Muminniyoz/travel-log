@@ -10,5 +10,4 @@ public class TravelLogsServiceApplication {
 		SpringApplication.run(TravelLogsServiceApplication.class, args);
 	}
 
-
 }
