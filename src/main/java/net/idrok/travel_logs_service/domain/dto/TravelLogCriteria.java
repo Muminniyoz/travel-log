@@ -1,26 +1,32 @@
 package net.idrok.travel_logs_service.domain.dto;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.time.LocalDate;
 
-public class TravelFilter {
-    private String startDate;
-    private String endDate;
+public class TravelLogCriteria {
+    @DateTimeFormat(pattern = "dd.MM.yyyy")
+    private LocalDate startDate;
+    @DateTimeFormat(pattern = "dd.MM.yyyy")
+    private LocalDate endDate;
     private String vehicleOwner;
     private String vehicleRegNum;
 
-    public String getStartDate() {
+    public TravelLogCriteria(){}
+
+    public LocalDate getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(String startDate) {
+    public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
 
-    public String getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(String endDate) {
+    public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
 

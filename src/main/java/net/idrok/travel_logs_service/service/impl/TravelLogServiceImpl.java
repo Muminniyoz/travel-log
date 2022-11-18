@@ -1,6 +1,7 @@
 package net.idrok.travel_logs_service.service.impl;
 
 import net.idrok.travel_logs_service.domain.TravelLog;
+import net.idrok.travel_logs_service.domain.dto.TravelLogCriteria;
 import net.idrok.travel_logs_service.domain.dto.TravelsOnDay;
 import net.idrok.travel_logs_service.domain.dto.TravelReportInPeriod;
 import net.idrok.travel_logs_service.repository.TravelLogRepository;
@@ -34,21 +35,9 @@ public class TravelLogServiceImpl implements TravelLogService {
     }
 
     @Override
-    public TravelReportInPeriod generateReport(String startDate, String endDate, String vehicleRegNum, String vehicleOwner) {
-           LocalDate sld = null;
-           LocalDate eld = null;
-            try{
-                sld =  LocalDate.parse(startDate, DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-            }
-            catch (Exception ex){}
-            try{
-                eld =  LocalDate.parse(endDate, DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-            }
-            catch (Exception ex){}
-            if(vehicleRegNum == null) vehicleRegNum = "";
-            if(vehicleOwner == null) vehicleOwner = "";
-            List<TravelsOnDay> travelsOnDays = repository.generateReport(sld, eld, vehicleRegNum, vehicleOwner);
-            return new TravelReportInPeriod(sld, eld, travelsOnDays);
+    public TravelReportInPeriod generateReport(TravelLogCriteria criteria) {
+            List<TravelsOnDay> travelsOnDays = repository.generateReport(criteria);
+            return new TravelReportInPeriod(criteria.getStartDate(), criteria.getEndDate(), travelsOnDays);
     }
 
 
